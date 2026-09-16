@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap — Projet LBP</title>
+<style>
+  :root{
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --border: #d0d7de;
+    --border-soft: #eaeef2;
+    --text: #1f2328;
+    --text-muted: #656d76;
+    --text-faint: #8c959f;
+    --row-hover: #f6f8fa;
+    --today: #cf222e;
+    --green: #1a7f37;
+    --accent: #0969da;
+    --pill-bg: #ffffff;
+    --pill-border: #d0d7de;
+    --shadow: 0 1px 0 rgba(31,35,40,.04);
+    --highlight-ring: #9a6700;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #0d1117; --border: #30363d; --border-soft: #21262d; --text: #e6edf3;
+      --text-muted: #8b949e; --text-faint: #6e7681; --row-hover: #161b22;
+      --green: #3fb950; --accent: #4493f8; --pill-bg: #0d1117; --pill-border: #30363d;
+      --shadow: 0 1px 0 rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #0d1117; --border: #30363d; --border-soft: #21262d; --text: #e6edf3;
+    --text-muted: #8b949e; --text-faint: #6e7681; --row-hover: #161b22;
+    --green: #3fb950; --accent: #4493f8; --pill-bg: #0d1117; --pill-border: #30363d;
+    --shadow: 0 1px 0 rgba(0,0,0,.2);
+  }
+
+  *{ box-sizing: border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+  }
+  .topbar{
+    display:flex; align-items:center; gap:10px; padding: 10px 14px; border-bottom: 1px solid var(--border);
+    flex-wrap:wrap;
+  }
+  .topbar h1{ font-size:14px; font-weight:600; margin:0; }
+  .topbar .sub{ font-size:11px; color: var(--text-muted); }
+  .spacer{ flex:1; }
+  .ghbtn{
+    background: var(--bg); border:1px solid var(--border); color: var(--text);
+    padding: 4px 10px; border-radius: 6px; font-size: 11.5px; cursor:pointer;
+  }
+  .ghbtn:hover{ background: var(--row-hover); }
+  .search{
+    background: var(--bg); border:1px solid var(--border); color: var(--text); border-radius:6px;
+    padding: 4px 10px; font-size: 11.5px; min-width: 200px;
+  }
+  .search::placeholder{ color: var(--text-faint); }
+  .viewtoggle{ display:flex; border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+  .viewtoggle .seg{ border:none; border-radius:0; }
+  .viewtoggle .seg + .seg{ border-left:1px solid var(--border); }
+  .viewtoggle .seg.active{ background: var(--text); color: var(--bg); }
+
+  .macro-pill{
+    position:absolute; top:6px; bottom:6px; border-radius:7px; display:flex; align-items:center; gap:8px;
+    padding:0 10px; font-size:12px; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden;
+    cursor:pointer; box-shadow: 0 1px 2px rgba(0,0,0,.15); transition: filter .1s, transform .1s;
+  }
+  .macro-pill:hover{ filter:brightness(1.08); transform: translateY(-1px); }
+  .macro-pill .mcount{ font-weight:700; opacity:.85; font-size:11px; background:rgba(255,255,255,.22); border-radius:999px; padding:1px 7px; flex:none; }
+  .macro-lbl{ font-weight:600; }
+  .macro-swatch{ width:11px; height:11px; border-radius:3px; flex:none; }
+
+  .scroll-area{ overflow: auto; max-height: 82vh; }
+  .grow{ display:flex; }
+  .grow.head{ position: sticky; top:0; z-index: 6; background: var(--bg); }
+  .grow.dim .lbl-text, .grow.dim .pill{ opacity:.3; }
+
+  .numcol{ width: 34px; flex:none; display:flex; align-items:center; justify-content:flex-end; padding-right:6px;
+    color: var(--text-faint); font-size:11px; border-right:1px solid var(--border-soft); border-bottom:1px solid var(--border-soft); height:32px; }
+  .grow.head .numcol{ height:38px; border-bottom:1px solid var(--border); }
+
+  .lbl-col{
+    position: sticky; left:34px; z-index: 4; background: var(--bg);
+    width: 330px; flex:none; border-right: 1px solid var(--border);
+  }
+  .grow.head .lbl-col{ z-index: 7; border-bottom: 1px solid var(--border); }
+
+  .lbl{ height: 32px; display:flex; align-items:center; gap:6px; padding: 0 10px; border-bottom: 1px solid var(--border-soft); white-space:nowrap; overflow:hidden; cursor:pointer; }
+  .lbl:hover{ background: var(--row-hover); }
+  .icon{ width:14px; height:14px; flex:none; color: var(--green); }
+  .lbl-text{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11.5px; color: var(--text); flex:1 1 auto; min-width:0; }
+  .issuenum{ font-size:11px; color: var(--text-faint); flex:none; }
+
+  .tl-col{ position: relative; }
+  .day{ width: var(--colw); flex:none; height:32px; border-right: 1px solid var(--border-soft); }
+  .grow.head .day{ height:38px; border-bottom:1px solid var(--border); position:relative; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:3px; }
+  .day .mo{ position:absolute; top:3px; left:2px; font-size:10px; font-weight:600; color:var(--text); white-space:nowrap; }
+  .day .dn{ font-size:10px; color: var(--text-muted); }
+  .day.today-col .dn{ color: var(--today); font-weight:700; }
+
+  .barrow{ position:relative; height:32px; border-bottom: 1px solid var(--border-soft); }
+  .pill{
+    position:absolute; top:4px; bottom:4px; min-width:18px; border-radius:6px;
+    background: var(--pill-bg); border:1px solid var(--pill-border); box-shadow: var(--shadow);
+    display:flex; align-items:center; gap:4px; padding:0 6px; font-size:11px; color: var(--text);
+    white-space:nowrap; overflow:hidden; cursor:pointer; transition: border-color .1s, box-shadow .15s;
+  }
+  .pill:hover{ border-color: var(--accent); }
+  .pill svg{ width:12px; height:12px; flex:none; color: var(--green); }
+  .pill .ptxt{ overflow:hidden; text-overflow:ellipsis; }
+  .pill.highlight-self{ box-shadow: 0 0 0 2px var(--highlight-ring); z-index:2; }
+  .pill.highlight-dep{ box-shadow: 0 0 0 2px #1a7f37; z-index:2; }
+  .pill.highlight-block{ box-shadow: 0 0 0 2px #8250df; z-index:2; }
+  .unsched{ position:absolute; left:6px; top:8px; font-size:10.5px; color: var(--text-faint); font-style:italic; }
+
+  .today-line{ position:absolute; top:0; bottom:0; width:0; border-left: 1.5px solid var(--today); z-index:5; pointer-events:none; }
+  .today-dot{ position:absolute; top:-5px; left:-3px; width:6px; height:6px; border-radius:50%; background:var(--today); }
+
+  .tooltip{
+    position: fixed; z-index: 50; background: var(--bg); border:1px solid var(--border);
+    border-radius: 8px; padding: 9px 11px; font-size:11.5px; max-width: 340px; box-shadow: 0 4px 16px rgba(0,0,0,.12);
+    pointer-events:none; display:none; line-height:1.5; color: var(--text);
+  }
+  .tooltip .t-title{ font-weight:600; margin-bottom:4px; }
+  .tooltip .t-row{ color: var(--text-muted); }
+  .tooltip .t-row b{ color: var(--text); font-weight:600; }
+  .tooltip .t-deps{ color:#1a7f37; }
+  .tooltip .t-blocks{ color:#8250df; }
+
+  .footer{ padding: 8px 14px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); }
+
+  ::-webkit-scrollbar{ height:10px; width:10px; }
+  ::-webkit-scrollbar-thumb{ background: var(--border); border-radius:6px; }
+  ::-webkit-scrollbar-track{ background: transparent; }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div>
+      <h1>Roadmap · projet-LBP</h1>
+      <p class="sub" id="subtitle"></p>
+    </div>
+    <div class="spacer"></div>
+    <div class="viewtoggle">
+      <button class="ghbtn seg active" id="btn-view-detail">Détail</button>
+      <button class="ghbtn seg" id="btn-view-macro">Macro</button>
+    </div>
+    <button class="ghbtn" id="btn-zoom-out">−</button>
+    <button class="ghbtn" id="btn-zoom-in">+</button>
+    <button class="ghbtn" id="btn-today">Aujourd'hui</button>
+    <input class="search" id="search" type="text" placeholder="Rechercher...">
+  </div>
+
+  <div class="scroll-area" id="scroll-area">
+    <div id="gtable"></div>
+  </div>
+
+  <div class="footer" id="footer"></div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const DATA = {"tasks": [{"id": "INFRA-01", "title": "Initialiser le monorepo et la structure du projet", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 1", "start": "2026-09-14", "end": "2026-09-15", "duration": 2, "deps": [], "blocks": ["INFRA-02", "INFRA-05", "INFRA-08"], "issueNum": "9", "epic": "Infrastructure & Setup"}, {"id": "INFRA-02", "title": "Dockeriser l'application Next.js", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 8", "start": "2026-09-14", "end": "2026-09-15", "duration": 2, "deps": ["INFRA-01"], "blocks": ["INFRA-03", "INFRA-05", "RELEASE-01"], "issueNum": "10", "epic": "Infrastructure & Setup"}, {"id": "INFRA-03", "title": "Assembler le docker-compose global (Next.js + reverse proxy)", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 12", "start": "2026-09-14", "end": "2026-09-15", "duration": 3, "deps": ["INFRA-02"], "blocks": ["INFRA-05", "RELEASE-01"], "issueNum": "11", "epic": "Infrastructure & Setup"}, {"id": "INFRA-04", "title": "Provisionner les projets Supabase (staging & production)", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 2", "start": "2026-09-14", "end": "2026-09-15", "duration": 2, "deps": [], "blocks": ["AUTH-01"], "issueNum": "12", "epic": "Infrastructure & Setup"}, {"id": "INFRA-05", "title": "Mettre en place la CI (lint, tests, build, image Docker)", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 7", "start": "2026-09-14", "end": "2026-09-15", "duration": 2, "deps": ["INFRA-01", "INFRA-02", "INFRA-03"], "blocks": ["INFRA-07"], "issueNum": "13", "epic": "Infrastructure & Setup"}, {"id": "INFRA-06", "title": "Centraliser la gestion des variables d'environnement", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 1", "start": "2026-09-14", "end": "2026-09-15", "duration": 1, "deps": [], "blocks": ["AUTOMATION-04", "RELEASE-01", "RELEASE-05"], "issueNum": "14", "epic": "Infrastructure & Setup"}, {"id": "INFRA-07", "title": "Mettre en place le pipeline de déploiement continu (CD)", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 10", "start": "2026-09-14", "end": "2026-09-15", "duration": 2, "deps": ["INFRA-05"], "blocks": ["RELEASE-02"], "issueNum": "15", "epic": "Infrastructure & Setup"}, {"id": "INFRA-08", "title": "Ajouter n8n au docker-compose et le sécuriser", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 9", "start": "2026-09-14", "end": "2026-09-15", "duration": 2, "deps": ["INFRA-01"], "blocks": ["AUTOMATION-01"], "issueNum": null, "epic": "Infrastructure & Setup"}, {"id": "DATA-01", "title": "Migration — companies & establishments", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 10", "start": "2026-09-16", "end": "2026-09-17", "duration": 3, "deps": [], "blocks": ["API-10"], "issueNum": "16", "epic": "Modèle de données & Supabase"}, {"id": "DATA-02", "title": "Migration — profiles, rôles applicatifs et trigger d'inscription", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 11", "start": "2026-09-16", "end": "2026-09-17", "duration": 3, "deps": [], "blocks": ["DATA-14", "DATA-15", "AUTH-01"], "issueNum": "17", "epic": "Modèle de données & Supabase"}, {"id": "DATA-03", "title": "Migration — team_members (organigramme) et bibliothèque d'avatars", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 12", "start": "2026-09-16", "end": "2026-09-17", "duration": 3, "deps": [], "blocks": ["API-09", "QUALITY-09"], "issueNum": "18", "epic": "Modèle de données & Supabase"}, {"id": "DATA-04", "title": "Migration — calendar_events et moteur de règles de récurrence", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 1", "start": "2026-09-16", "end": "2026-09-17", "duration": 3, "deps": [], "blocks": ["API-07", "WEB-18"], "issueNum": "19", "epic": "Modèle de données & Supabase"}, {"id": "DATA-05", "title": "Migration — tasks (rappels de la semaine)", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 3", "start": "2026-09-16", "end": "2026-09-17", "duration": 2, "deps": [], "blocks": ["API-08"], "issueNum": "20", "epic": "Modèle de données & Supabase"}, {"id": "DATA-06", "title": "Migration — paie_org et tools", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 4", "start": "2026-09-16", "end": "2026-09-17", "duration": 2, "deps": [], "blocks": ["API-10"], "issueNum": "21", "epic": "Modèle de données & Supabase"}, {"id": "DATA-07", "title": "Migration — families, themes, fiches (bibliothèque)", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 2", "start": "2026-09-18", "end": "2026-09-19", "duration": 3, "deps": [], "blocks": ["API-01", "API-02", "QUALITY-10"], "issueNum": "22", "epic": "Modèle de données & Supabase"}, {"id": "DATA-08", "title": "Migration — articles (Actu · Décrypt)", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 3", "start": "2026-09-18", "end": "2026-09-19", "duration": 3, "deps": [], "blocks": ["API-03"], "issueNum": "23", "epic": "Modèle de données & Supabase"}, {"id": "DATA-09", "title": "Migration — veille et fiche_updates", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 4", "start": "2026-09-18", "end": "2026-09-19", "duration": 3, "deps": [], "blocks": ["API-01"], "issueNum": "24", "epic": "Modèle de données & Supabase"}, {"id": "DATA-10", "title": "Migration — notifications", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 5", "start": "2026-09-18", "end": "2026-09-19", "duration": 3, "deps": [], "blocks": ["API-11", "WEB-21"], "issueNum": "25", "epic": "Modèle de données & Supabase"}, {"id": "DATA-11", "title": "Migration — offers", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 5", "start": "2026-09-18", "end": "2026-09-19", "duration": 2, "deps": [], "blocks": ["API-05"], "issueNum": "26", "epic": "Modèle de données & Supabase"}, {"id": "DATA-12", "title": "Migration — chiffres (repères paie)", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 6", "start": "2026-09-20", "end": "2026-09-21", "duration": 3, "deps": [], "blocks": ["API-06"], "issueNum": "27", "epic": "Modèle de données & Supabase"}, {"id": "DATA-13", "title": "Migration — quiz_scores", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 6", "start": "2026-09-20", "end": "2026-09-21", "duration": 2, "deps": [], "blocks": ["API-04", "WEB-14"], "issueNum": "28", "epic": "Modèle de données & Supabase"}, {"id": "DATA-14", "title": "Gabarit RLS générique multi-société pour toutes les tables clients", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 1", "start": "2026-09-20", "end": "2026-09-21", "duration": 3, "deps": ["DATA-02"], "blocks": ["AUTH-09", "WEB-06", "QUALITY-08", "RELEASE-05"], "issueNum": "29", "epic": "Modèle de données & Supabase"}, {"id": "DATA-15", "title": "Ajouter le champ hasOnboardingTour à la table profiles", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 2", "start": "2026-09-20", "end": "2026-09-21", "duration": 3, "deps": ["DATA-02"], "blocks": ["ONBOARD-01"], "issueNum": "30", "epic": "Modèle de données & Supabase"}, {"id": "AUTH-01", "title": "Intégrer Supabase Auth dans l'application Next.js", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 3", "start": "2026-09-22", "end": "2026-09-23", "duration": 3, "deps": ["DATA-02", "INFRA-04"], "blocks": ["AUTH-02", "AUTH-05", "AUTH-07", "API-02", "API-03", "API-04", "API-05", "API-06", "API-07", "API-08", "API-09", "API-10", "API-11", "API-13", "WEB-01"], "issueNum": "31", "epic": "Authentification & comptes"}, {"id": "AUTH-02", "title": "Endpoint d'onboarding — création du compte invité", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 4", "start": "2026-09-22", "end": "2026-09-23", "duration": 3, "deps": ["AUTH-01"], "blocks": ["AUTH-03", "AUTH-04"], "issueNum": "32", "epic": "Authentification & comptes"}, {"id": "AUTH-03", "title": "Configurer les gabarits d'e-mails d'authentification et le SMTP Brevo", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 2", "start": "2026-09-22", "end": "2026-09-23", "duration": 2, "deps": ["AUTH-02"], "blocks": ["AUTH-06", "QUALITY-02"], "issueNum": "33", "epic": "Authentification & comptes"}, {"id": "AUTH-04", "title": "Page front — Définir mon mot de passe (première connexion)", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 6", "start": "2026-09-22", "end": "2026-09-23", "duration": 3, "deps": ["AUTH-02"], "blocks": [], "issueNum": "34", "epic": "Authentification & comptes"}, {"id": "AUTH-05", "title": "Page front — Connexion / Déconnexion", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 10", "start": "2026-09-22", "end": "2026-09-23", "duration": 2, "deps": ["AUTH-01"], "blocks": ["AUTH-07", "AUTH-08"], "issueNum": "35", "epic": "Authentification & comptes"}, {"id": "AUTH-06", "title": "Parcours mot de passe oublié / réinitialisation", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 9", "start": "2026-09-22", "end": "2026-09-23", "duration": 3, "deps": ["AUTH-03"], "blocks": [], "issueNum": "36", "epic": "Authentification & comptes"}, {"id": "AUTH-07", "title": "Bascule automatique du mode UI selon le rôle du compte connecté", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 11", "start": "2026-09-24", "end": "2026-09-25", "duration": 2, "deps": ["AUTH-01", "AUTH-05"], "blocks": ["AUTH-09", "WEB-17"], "issueNum": "37", "epic": "Authentification & comptes"}, {"id": "AUTH-08", "title": "Modification du mot de passe depuis Mon compte", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 12", "start": "2026-09-24", "end": "2026-09-25", "duration": 2, "deps": ["AUTH-05"], "blocks": ["WEB-20"], "issueNum": "38", "epic": "Authentification & comptes"}, {"id": "AUTH-09", "title": "Tests de cloisonnement multi-société et d'étanchéité des mots de passe", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 7", "start": "2026-09-24", "end": "2026-09-25", "duration": 3, "deps": ["DATA-14", "AUTH-07"], "blocks": ["QUALITY-03", "QUALITY-08", "RELEASE-03", "RELEASE-05"], "issueNum": "39", "epic": "Authentification & comptes"}, {"id": "API-01", "title": "Module Veille — endpoints /veille", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 4", "start": "2026-09-26", "end": "2026-09-27", "duration": 3, "deps": ["DATA-09", "DATA-07"], "blocks": ["API-12", "WEB-17", "AUTOMATION-05", "AUTOMATION-06"], "issueNum": "40", "epic": "API & Server Actions (Next.js)"}, {"id": "API-02", "title": "Module Fiches — CRUD et workflow de publication", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 5", "start": "2026-09-26", "end": "2026-09-27", "duration": 3, "deps": ["DATA-07", "AUTH-01"], "blocks": ["API-12", "WEB-07", "WEB-08", "AUTOMATION-08", "QUALITY-03"], "issueNum": "41", "epic": "API & Server Actions (Next.js)"}, {"id": "API-03", "title": "Module Articles — CRUD et publication", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 6", "start": "2026-09-26", "end": "2026-09-27", "duration": 3, "deps": ["DATA-08", "AUTH-01"], "blocks": ["WEB-11", "WEB-12"], "issueNum": "42", "epic": "API & Server Actions (Next.js)"}, {"id": "API-04", "title": "Module Quizzes — CRUD", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 8", "start": "2026-09-26", "end": "2026-09-27", "duration": 2, "deps": ["DATA-13", "AUTH-01"], "blocks": ["WEB-14"], "issueNum": "43", "epic": "API & Server Actions (Next.js)"}, {"id": "API-05", "title": "Module Offers — CRUD", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 9", "start": "2026-09-26", "end": "2026-09-27", "duration": 2, "deps": ["DATA-11", "AUTH-01"], "blocks": ["WEB-16"], "issueNum": "44", "epic": "API & Server Actions (Next.js)"}, {"id": "API-06", "title": "Module Chiffres — lecture et mise à jour", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 7", "start": "2026-09-26", "end": "2026-09-27", "duration": 3, "deps": ["DATA-12", "AUTH-01"], "blocks": ["WEB-02", "WEB-13"], "issueNum": "45", "epic": "API & Server Actions (Next.js)"}, {"id": "API-07", "title": "Module Calendar events — CRUD", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 1", "start": "2026-09-28", "end": "2026-09-29", "duration": 3, "deps": ["DATA-04", "AUTH-01"], "blocks": ["WEB-02", "WEB-18"], "issueNum": "46", "epic": "API & Server Actions (Next.js)"}, {"id": "API-08", "title": "Module Tasks — CRUD", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 11", "start": "2026-09-28", "end": "2026-09-29", "duration": 2, "deps": ["DATA-05", "AUTH-01"], "blocks": ["WEB-02"], "issueNum": "47", "epic": "API & Server Actions (Next.js)"}, {"id": "API-09", "title": "Module Team — CRUD organigramme", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 12", "start": "2026-09-28", "end": "2026-09-29", "duration": 2, "deps": ["DATA-03", "AUTH-01"], "blocks": ["WEB-04"], "issueNum": "48", "epic": "API & Server Actions (Next.js)"}, {"id": "API-10", "title": "Module Company — identité, organisation paie, outils", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 1", "start": "2026-09-28", "end": "2026-09-29", "duration": 2, "deps": ["DATA-01", "DATA-06", "AUTH-01"], "blocks": ["WEB-04", "WEB-05"], "issueNum": "49", "epic": "API & Server Actions (Next.js)"}, {"id": "API-11", "title": "Module Notifications — lecture et marquage lu", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 2", "start": "2026-09-28", "end": "2026-09-29", "duration": 3, "deps": ["DATA-10", "AUTH-01"], "blocks": ["WEB-21", "PWA-03"], "issueNum": "50", "epic": "API & Server Actions (Next.js)"}, {"id": "API-12", "title": "Documentation API (OpenAPI/Swagger)", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 3", "start": "2026-09-28", "end": "2026-09-29", "duration": 2, "deps": ["API-01", "API-02"], "blocks": [], "issueNum": "51", "epic": "API & Server Actions (Next.js)"}, {"id": "API-13", "title": "Authentification par jeton de service pour les appels serveur à serveur (n8n)", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 6", "start": "2026-09-26", "end": "2026-09-27", "duration": 1, "deps": ["AUTH-01"], "blocks": ["AUTOMATION-01", "AUTOMATION-05", "AUTOMATION-06"], "issueNum": null, "epic": "API & Server Actions (Next.js)"}, {"id": "WEB-01", "title": "Shell applicatif — navigation, mode, cloche, recherche, compte", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 2", "start": "2026-09-30", "end": "2026-10-01", "duration": 2, "deps": ["AUTH-01"], "blocks": ["WEB-02", "WEB-04", "WEB-07", "WEB-11", "WEB-13", "WEB-14", "WEB-16", "WEB-17", "WEB-18", "WEB-19", "WEB-20", "WEB-21", "WEB-23", "RELEASE-03"], "issueNum": "52", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-02", "title": "Page d'accueil — bandeau, rappels, calendrier widget, chiffres clés", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 8", "start": "2026-09-30", "end": "2026-10-01", "duration": 3, "deps": ["API-06", "API-07", "API-08", "WEB-01"], "blocks": ["WEB-03", "ONBOARD-03"], "issueNum": "53", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-03", "title": "Page d'accueil — blocs d'actualités et édition G2S", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 6", "start": "2026-09-30", "end": "2026-10-01", "duration": 3, "deps": ["WEB-02"], "blocks": [], "issueNum": "54", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-04", "title": "Page Mon équipe — Identité & Organisation (organigramme)", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 12", "start": "2026-09-30", "end": "2026-10-01", "duration": 3, "deps": ["API-09", "API-10", "WEB-01"], "blocks": ["WEB-05", "WEB-06", "PWA-05"], "issueNum": "55", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-05", "title": "Page Mon équipe — Organisation de la paie & Outils", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 6", "start": "2026-09-30", "end": "2026-10-01", "duration": 2, "deps": ["API-10", "WEB-04"], "blocks": [], "issueNum": "56", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-06", "title": "Page Mon équipe — Vos documents & gestion documentaire réelle", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 10", "start": "2026-09-30", "end": "2026-10-01", "duration": 3, "deps": ["WEB-04", "DATA-14"], "blocks": [], "issueNum": "57", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-07", "title": "Bibliothèque — structure, navigation et recherche transversale", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 9", "start": "2026-10-02", "end": "2026-10-03", "duration": 3, "deps": ["API-02", "WEB-01"], "blocks": ["WEB-08", "WEB-22"], "issueNum": "58", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-08", "title": "Bibliothèque — éditeur G2S (familles, thèmes, fiches)", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 7", "start": "2026-10-02", "end": "2026-10-03", "duration": 3, "deps": ["WEB-07", "API-02"], "blocks": ["WEB-09"], "issueNum": "59", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-09", "title": "Fiche — parcours de lecture en 3 niveaux, vigilance et quiz", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 5", "start": "2026-10-02", "end": "2026-10-03", "duration": 3, "deps": ["WEB-08"], "blocks": ["WEB-10", "BACKLOG-03"], "issueNum": "60", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-10", "title": "Fiche — éditeur complet et import Word (front)", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 8", "start": "2026-10-02", "end": "2026-10-03", "duration": 3, "deps": ["WEB-09", "AUTOMATION-08"], "blocks": [], "issueNum": "61", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-11", "title": "Actu · Décrypt — consultation (grille, filtres, pagination)", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 10", "start": "2026-10-02", "end": "2026-10-03", "duration": 3, "deps": ["API-03", "WEB-01"], "blocks": ["WEB-12", "WEB-22"], "issueNum": "62", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-12", "title": "Actu · Décrypt — édition G2S", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 12", "start": "2026-10-02", "end": "2026-10-03", "duration": 3, "deps": ["WEB-11", "API-03"], "blocks": [], "issueNum": "63", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-13", "title": "Chiffres Paie — consultation et édition G2S", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 11", "start": "2026-10-04", "end": "2026-10-05", "duration": 3, "deps": ["API-06", "WEB-01"], "blocks": [], "issueNum": "64", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-14", "title": "Quiz — cockpit et lecteur", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 1", "start": "2026-10-04", "end": "2026-10-05", "duration": 3, "deps": ["API-04", "DATA-13", "WEB-01"], "blocks": ["WEB-15", "WEB-22"], "issueNum": "65", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-15", "title": "Quiz — éditeur autonome et import de fichier", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 5", "start": "2026-10-04", "end": "2026-10-05", "duration": 2, "deps": ["WEB-14", "AUTOMATION-08"], "blocks": [], "issueNum": "66", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-16", "title": "Offres — consultation et édition G2S", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 4", "start": "2026-10-04", "end": "2026-10-05", "duration": 2, "deps": ["API-05", "WEB-01"], "blocks": [], "issueNum": "67", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-17", "title": "Veille réglementaire — vue G2S", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 8", "start": "2026-10-04", "end": "2026-10-05", "duration": 4, "deps": ["API-01", "WEB-01", "AUTH-07"], "blocks": ["WEB-22", "AUTOMATION-06"], "issueNum": "68", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-18", "title": "Calendrier RH — onglet dédié complet", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 2", "start": "2026-10-04", "end": "2026-10-05", "duration": 3, "deps": ["API-07", "DATA-04", "WEB-01"], "blocks": ["PWA-05", "AUTOMATION-07"], "issueNum": "69", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-19", "title": "Prise en main — page et édition G2S", "priority": "P3", "phase": "Projet (15/10)", "flux": "Flux 5", "start": "2026-10-06", "end": "2026-10-07", "duration": 2, "deps": ["WEB-01"], "blocks": [], "issueNum": "70", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-20", "title": "Mon compte", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 3", "start": "2026-10-06", "end": "2026-10-07", "duration": 3, "deps": ["AUTH-08", "WEB-01"], "blocks": [], "issueNum": "71", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-21", "title": "Notifications — cloche, panneau et circuit de validation", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 4", "start": "2026-10-06", "end": "2026-10-07", "duration": 3, "deps": ["API-11", "DATA-10", "WEB-01"], "blocks": [], "issueNum": "72", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-22", "title": "Recherche globale unifiée", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 9", "start": "2026-10-06", "end": "2026-10-07", "duration": 2, "deps": ["WEB-07", "WEB-11", "WEB-14", "WEB-17"], "blocks": [], "issueNum": "73", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-23", "title": "Assistance — widget connecté à un canal réel", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 6", "start": "2026-10-06", "end": "2026-10-07", "duration": 2, "deps": ["WEB-01"], "blocks": [], "issueNum": "74", "epic": "Frontend web — pages fonctionnelles"}, {"id": "WEB-24", "title": "Implémentation du design system (charte graphique complète)", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 7", "start": "2026-10-06", "end": "2026-10-07", "duration": 3, "deps": [], "blocks": ["PWA-01", "ONBOARD-02", "QUALITY-06"], "issueNum": "75", "epic": "Frontend web — pages fonctionnelles"}, {"id": "PWA-01", "title": "Transformer l'application web en PWA installable", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 5", "start": "2026-10-08", "end": "2026-10-09", "duration": 3, "deps": ["WEB-24"], "blocks": ["PWA-02", "PWA-03", "PWA-05"], "issueNum": "76", "epic": "PWA (Progressive Web App)"}, {"id": "PWA-02", "title": "Service worker — mise en cache et consultation hors ligne", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 3", "start": "2026-10-08", "end": "2026-10-09", "duration": 3, "deps": ["PWA-01"], "blocks": [], "issueNum": "77", "epic": "PWA (Progressive Web App)"}, {"id": "PWA-03", "title": "Notifications push web (remplace APNs/FCM)", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 12", "start": "2026-10-08", "end": "2026-10-09", "duration": 3, "deps": ["PWA-01", "API-11"], "blocks": ["PWA-04"], "issueNum": "78", "epic": "PWA (Progressive Web App)"}, {"id": "PWA-04", "title": "Deep links — ouverture directe depuis une notification", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 11", "start": "2026-10-08", "end": "2026-10-09", "duration": 2, "deps": ["PWA-03"], "blocks": [], "issueNum": "79", "epic": "PWA (Progressive Web App)"}, {"id": "PWA-05", "title": "Adaptations ergonomiques mobile", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 1", "start": "2026-10-08", "end": "2026-10-09", "duration": 3, "deps": ["PWA-01", "WEB-18", "WEB-04"], "blocks": ["QUALITY-07"], "issueNum": "80", "epic": "PWA (Progressive Web App)"}, {"id": "ONBOARD-01", "title": "Exposer le champ hasOnboardingTour côté API", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 8", "start": "2026-10-10", "end": "2026-10-11", "duration": 3, "deps": ["DATA-15"], "blocks": ["ONBOARD-04"], "issueNum": "81", "epic": "Onboarding guidé (driver.js)"}, {"id": "ONBOARD-02", "title": "Intégrer la librairie driver.js dans le front", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 8", "start": "2026-10-10", "end": "2026-10-11", "duration": 2, "deps": ["WEB-24"], "blocks": ["ONBOARD-03"], "issueNum": "82", "epic": "Onboarding guidé (driver.js)"}, {"id": "ONBOARD-03", "title": "Définir et implémenter le scénario du tour guidé", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 2", "start": "2026-10-10", "end": "2026-10-11", "duration": 3, "deps": ["ONBOARD-02", "WEB-02"], "blocks": ["ONBOARD-04"], "issueNum": "83", "epic": "Onboarding guidé (driver.js)"}, {"id": "ONBOARD-04", "title": "Déclenchement du tour à la première connexion et rejeu manuel", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 6", "start": "2026-10-10", "end": "2026-10-11", "duration": 3, "deps": ["ONBOARD-01", "ONBOARD-03"], "blocks": [], "issueNum": "84", "epic": "Onboarding guidé (driver.js)"}, {"id": "AUTOMATION-01", "title": "Déployer le workflow n8n de veille et le connecter à l'application", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 3", "start": "2026-10-12", "end": "2026-10-13", "duration": 2, "deps": ["INFRA-08", "API-13"], "blocks": ["AUTOMATION-02", "AUTOMATION-03", "AUTOMATION-04", "QUALITY-05", "RELEASE-03"], "issueNum": "85", "epic": "Automatisations"}, {"id": "AUTOMATION-02", "title": "Workflow n8n — connecteurs des 7 sources officielles de veille", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 5", "start": "2026-10-12", "end": "2026-10-13", "duration": 4, "deps": ["AUTOMATION-01"], "blocks": ["AUTOMATION-05"], "issueNum": "86", "epic": "Automatisations"}, {"id": "AUTOMATION-03", "title": "Workflow n8n — analyse IA des textes de veille (nœud HTTP vers l'API Claude)", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 7", "start": "2026-10-12", "end": "2026-10-13", "duration": 2, "deps": ["AUTOMATION-01"], "blocks": ["AUTOMATION-06"], "issueNum": "87", "epic": "Automatisations"}, {"id": "AUTOMATION-04", "title": "Workflow n8n — notifications e-mail + SMS du résultat de la veille (Brevo)", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 10", "start": "2026-10-12", "end": "2026-10-13", "duration": 2, "deps": ["AUTOMATION-01", "INFRA-06"], "blocks": [], "issueNum": "88", "epic": "Automatisations"}, {"id": "AUTOMATION-05", "title": "Déduplication et reprise des jours manqués (workflow n8n)", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 2", "start": "2026-10-12", "end": "2026-10-13", "duration": 2, "deps": ["AUTOMATION-02", "API-01", "API-13"], "blocks": [], "issueNum": "89", "epic": "Automatisations"}, {"id": "AUTOMATION-06", "title": "Rapprochement veille ↔ fiches et création de fiche brouillon (workflow n8n → API)", "priority": "P0", "phase": "Priorité n8n", "flux": "Flux 10", "start": "2026-10-12", "end": "2026-10-13", "duration": 3, "deps": ["AUTOMATION-03", "API-01", "API-13", "WEB-17"], "blocks": ["AUTOMATION-07"], "issueNum": "90", "epic": "Automatisations"}, {"id": "AUTOMATION-07", "title": "Alimentation semi-automatique du Calendrier RH par la veille", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 7", "start": "2026-10-12", "end": "2026-10-13", "duration": 2, "deps": ["AUTOMATION-06", "WEB-18"], "blocks": [], "issueNum": "91", "epic": "Automatisations"}, {"id": "AUTOMATION-08", "title": "Import Word robuste côté serveur (fiches & quiz)", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 1", "start": "2026-10-12", "end": "2026-10-13", "duration": 3, "deps": ["API-02"], "blocks": ["WEB-10", "WEB-15"], "issueNum": "92", "epic": "Automatisations"}, {"id": "QUALITY-01", "title": "RGPD — consentement, conservation et droits d'accès/suppression", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 7", "start": "2026-10-14", "end": "2026-10-15", "duration": 2, "deps": [], "blocks": ["BACKLOG-02"], "issueNum": "93", "epic": "Sécurité, RGPD & Qualité"}, {"id": "QUALITY-02", "title": "Authentifier le domaine d'envoi e-mail (SPF/DKIM)", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 7", "start": "2026-10-14", "end": "2026-10-15", "duration": 2, "deps": ["AUTH-03"], "blocks": [], "issueNum": "94", "epic": "Sécurité, RGPD & Qualité"}, {"id": "QUALITY-03", "title": "Tests automatisés sur les parcours critiques", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 3", "start": "2026-10-14", "end": "2026-10-15", "duration": 2, "deps": ["API-02", "AUTH-09"], "blocks": [], "issueNum": "95", "epic": "Sécurité, RGPD & Qualité"}, {"id": "QUALITY-04", "title": "Journalisation des actions d'édition (audit log)", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 8", "start": "2026-10-14", "end": "2026-10-15", "duration": 2, "deps": [], "blocks": [], "issueNum": "96", "epic": "Sécurité, RGPD & Qualité"}, {"id": "QUALITY-05", "title": "Supervision du workflow n8n de veille et alerting", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 11", "start": "2026-10-14", "end": "2026-10-15", "duration": 2, "deps": ["AUTOMATION-01"], "blocks": [], "issueNum": "97", "epic": "Sécurité, RGPD & Qualité"}, {"id": "QUALITY-06", "title": "Accessibilité (a11y)", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 9", "start": "2026-10-14", "end": "2026-10-15", "duration": 2, "deps": ["WEB-24"], "blocks": [], "issueNum": "98", "epic": "Sécurité, RGPD & Qualité"}, {"id": "QUALITY-07", "title": "Validation responsive complète (mobile, tablette, grand écran)", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 11", "start": "2026-10-14", "end": "2026-10-15", "duration": 2, "deps": ["PWA-05"], "blocks": [], "issueNum": "99", "epic": "Sécurité, RGPD & Qualité"}, {"id": "QUALITY-08", "title": "Gestion multi-sociétés réelle côté G2S", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 3", "start": "2026-10-14", "end": "2026-10-15", "duration": 3, "deps": ["DATA-14", "AUTH-09"], "blocks": [], "issueNum": "100", "epic": "Sécurité, RGPD & Qualité"}, {"id": "QUALITY-09", "title": "Externaliser le stockage des avatars", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 10", "start": "2026-10-14", "end": "2026-10-15", "duration": 2, "deps": ["DATA-03"], "blocks": [], "issueNum": "101", "epic": "Sécurité, RGPD & Qualité"}, {"id": "QUALITY-10", "title": "Séparer identifiant technique et ordre d'affichage des thèmes", "priority": "P2", "phase": "Projet (15/10)", "flux": "Flux 11", "start": "2026-10-14", "end": "2026-10-15", "duration": 2, "deps": ["DATA-07"], "blocks": [], "issueNum": "102", "epic": "Sécurité, RGPD & Qualité"}, {"id": "RELEASE-01", "title": "Finaliser la dockerisation complète pour la production", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 9", "start": "2026-10-16", "end": "2026-10-16", "duration": 3, "deps": ["INFRA-02", "INFRA-03", "INFRA-06"], "blocks": ["RELEASE-02"], "issueNum": "103", "epic": "Déploiement & Recette"}, {"id": "RELEASE-02", "title": "Pipeline CD de déploiement vers l'environnement cible", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 4", "start": "2026-10-16", "end": "2026-10-16", "duration": 2, "deps": ["INFRA-07", "RELEASE-01"], "blocks": [], "issueNum": "104", "epic": "Déploiement & Recette"}, {"id": "RELEASE-03", "title": "Recette fonctionnelle complète (checklist du cahier des charges)", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 4", "start": "2026-10-16", "end": "2026-10-16", "duration": 2, "deps": ["WEB-01", "AUTH-09", "AUTOMATION-01"], "blocks": [], "issueNum": "105", "epic": "Déploiement & Recette"}, {"id": "RELEASE-04", "title": "Vérifier les chiffres de référence avant mise en production", "priority": "P1", "phase": "Projet (15/10)", "flux": "Flux 9", "start": "2026-10-16", "end": "2026-10-16", "duration": 2, "deps": [], "blocks": [], "issueNum": "106", "epic": "Déploiement & Recette"}, {"id": "RELEASE-05", "title": "Revue de sécurité pré-production", "priority": "P0", "phase": "Projet (15/10)", "flux": "Flux 4", "start": "2026-10-16", "end": "2026-10-16", "duration": 3, "deps": ["DATA-14", "INFRA-06", "AUTH-09"], "blocks": [], "issueNum": "107", "epic": "Déploiement & Recette"}, {"id": "BACKLOG-01", "title": "Facturation et paiement des abonnements", "priority": "P3", "phase": "Backlog", "flux": "", "start": "2026-10-17", "end": "2026-10-17", "duration": null, "deps": [], "blocks": [], "issueNum": "108", "epic": "Backlog — hors périmètre"}, {"id": "BACKLOG-02", "title": "Statistiques d'usage", "priority": "P3", "phase": "Backlog", "flux": "", "start": "2026-10-17", "end": "2026-10-17", "duration": null, "deps": ["QUALITY-01"], "blocks": [], "issueNum": "109", "epic": "Backlog — hors périmètre"}, {"id": "BACKLOG-03", "title": "Export PDF d'une fiche ou d'un ensemble de fiches", "priority": "P3", "phase": "Backlog", "flux": "", "start": "2026-10-17", "end": "2026-10-17", "duration": null, "deps": ["WEB-09"], "blocks": [], "issueNum": "110", "epic": "Backlog — hors périmètre"}, {"id": "BACKLOG-04", "title": "Gestion multilingue", "priority": "P3", "phase": "Backlog", "flux": "", "start": "2026-10-17", "end": "2026-10-17", "duration": null, "deps": [], "blocks": [], "issueNum": "111", "epic": "Backlog — hors périmètre"}, {"id": "BACKLOG-05", "title": "Signature électronique et flux contractuels", "priority": "P3", "phase": "Backlog", "flux": "", "start": "2026-10-17", "end": "2026-10-17", "duration": null, "deps": [], "blocks": [], "issueNum": "112", "epic": "Backlog — hors périmètre"}, {"id": "DOC-INFRA", "title": "Documentation technique — Infrastructure & Setup", "priority": "P2", "phase": "Transverse", "flux": "—", "start": "2026-09-16", "end": "2026-09-16", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Documentation technique", "special": "doc"}, {"id": "DOC-DATA", "title": "Documentation technique — Modèle de données & Supabase", "priority": "P2", "phase": "Transverse", "flux": "—", "start": "2026-09-22", "end": "2026-09-22", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Documentation technique", "special": "doc"}, {"id": "DOC-AUTH", "title": "Documentation technique — Authentification & comptes", "priority": "P2", "phase": "Transverse", "flux": "—", "start": "2026-09-26", "end": "2026-09-26", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Documentation technique", "special": "doc"}, {"id": "DOC-API", "title": "Documentation technique — API & Server Actions (Next.js)", "priority": "P2", "phase": "Transverse", "flux": "—", "start": "2026-09-30", "end": "2026-09-30", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Documentation technique", "special": "doc"}, {"id": "DOC-WEB", "title": "Documentation technique — Frontend web — pages fonctionnelles", "priority": "P2", "phase": "Transverse", "flux": "—", "start": "2026-10-08", "end": "2026-10-08", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Documentation technique", "special": "doc"}, {"id": "DOC-PWA", "title": "Documentation technique — PWA (Progressive Web App)", "priority": "P2", "phase": "Transverse", "flux": "—", "start": "2026-10-10", "end": "2026-10-10", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Documentation technique", "special": "doc"}, {"id": "DOC-ONBOARD", "title": "Documentation technique — Onboarding guidé (driver.js)", "priority": "P2", "phase": "Transverse", "flux": "—", "start": "2026-10-12", "end": "2026-10-12", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Documentation technique", "special": "doc"}, {"id": "DOC-AUTOMATION", "title": "Documentation technique — Automatisations", "priority": "P2", "phase": "Transverse", "flux": "—", "start": "2026-10-14", "end": "2026-10-14", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Documentation technique", "special": "doc"}, {"id": "DOC-QUALITY", "title": "Documentation technique — Sécurité, RGPD & Qualité", "priority": "P2", "phase": "Transverse", "flux": "—", "start": "2026-10-16", "end": "2026-10-16", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Documentation technique", "special": "doc"}, {"id": "DOC-RELEASE", "title": "Documentation technique — Déploiement & Recette", "priority": "P2", "phase": "Transverse", "flux": "—", "start": "2026-10-17", "end": "2026-10-17", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Documentation technique", "special": "doc"}, {"id": "REC-2026-09-15", "title": "Recettage (mardi 15/09)", "priority": "P1", "phase": "Transverse", "flux": "—", "start": "2026-09-15", "end": "2026-09-15", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Recettage (mar. / jeu.)", "special": "test"}, {"id": "REC-2026-09-17", "title": "Recettage (jeudi 17/09)", "priority": "P1", "phase": "Transverse", "flux": "—", "start": "2026-09-17", "end": "2026-09-17", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Recettage (mar. / jeu.)", "special": "test"}, {"id": "REC-2026-09-22", "title": "Recettage (mardi 22/09)", "priority": "P1", "phase": "Transverse", "flux": "—", "start": "2026-09-22", "end": "2026-09-22", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Recettage (mar. / jeu.)", "special": "test"}, {"id": "REC-2026-09-24", "title": "Recettage (jeudi 24/09)", "priority": "P1", "phase": "Transverse", "flux": "—", "start": "2026-09-24", "end": "2026-09-24", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Recettage (mar. / jeu.)", "special": "test"}, {"id": "REC-2026-09-29", "title": "Recettage (mardi 29/09)", "priority": "P1", "phase": "Transverse", "flux": "—", "start": "2026-09-29", "end": "2026-09-29", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Recettage (mar. / jeu.)", "special": "test"}, {"id": "REC-2026-10-01", "title": "Recettage (jeudi 01/10)", "priority": "P1", "phase": "Transverse", "flux": "—", "start": "2026-10-01", "end": "2026-10-01", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Recettage (mar. / jeu.)", "special": "test"}, {"id": "REC-2026-10-06", "title": "Recettage (mardi 06/10)", "priority": "P1", "phase": "Transverse", "flux": "—", "start": "2026-10-06", "end": "2026-10-06", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Recettage (mar. / jeu.)", "special": "test"}, {"id": "REC-2026-10-08", "title": "Recettage (jeudi 08/10)", "priority": "P1", "phase": "Transverse", "flux": "—", "start": "2026-10-08", "end": "2026-10-08", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Recettage (mar. / jeu.)", "special": "test"}, {"id": "REC-2026-10-13", "title": "Recettage (mardi 13/10)", "priority": "P1", "phase": "Transverse", "flux": "—", "start": "2026-10-13", "end": "2026-10-13", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Recettage (mar. / jeu.)", "special": "test"}, {"id": "REC-2026-10-15", "title": "Recettage (jeudi 15/10)", "priority": "P1", "phase": "Transverse", "flux": "—", "start": "2026-10-15", "end": "2026-10-15", "duration": 1, "deps": [], "blocks": [], "issueNum": null, "epic": "Recettage (mar. / jeu.)", "special": "test"}]};
+
+const MONTHS_FR = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+
+function parseDate(s){ if (!s) return null; const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+function addDays(d, n){ const nd = new Date(d); nd.setDate(nd.getDate() + n); return nd; }
+function fmtShort(d){ return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+function dayIndex(d, from){ return Math.round((d - from) / 86400000); }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&lt;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+const tasks = DATA.tasks.map((t, i) => ({ ...t, row: i + 1, startD: parseDate(t.start), endD: parseDate(t.end), deps: t.deps || [], blocks: t.blocks || [] }));
+const taskById = {};
+tasks.forEach(t => { taskById[t.id] = t; });
+
+let allStarts = [], allEnds = [];
+tasks.forEach(t => { if (t.startD) allStarts.push(t.startD); if (t.endD) allEnds.push(t.endD); });
+const globalStart = addDays(new Date(Math.min(...allStarts)), -2);
+const globalEnd = addDays(new Date(Math.max(...allEnds)), 2);
+const totalDays = dayIndex(globalEnd, globalStart) + 1;
+
+document.getElementById('subtitle').textContent = `${tasks.length} tickets · ${fmtShort(new Date(Math.min(...allStarts)))} → ${fmtShort(new Date(Math.max(...allEnds)))}`;
+
+function iconSvg(){
+  return `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6.3"/><path d="M6 8l1.5 1.5L10.5 6" stroke-width="1.6"/></svg>`;
+}
+
+let colWidth = 24;
+const table = document.getElementById('gtable');
+let highlighted = null;
+let viewMode = 'detail';
+
+const EPIC_ORDER = [
+  'Infrastructure & Setup', 'Modèle de données & Supabase', 'Authentification & comptes',
+  'API & Server Actions (Next.js)', 'Frontend web — pages fonctionnelles', 'PWA (Progressive Web App)',
+  'Onboarding guidé (driver.js)', 'Automatisations', 'Sécurité, RGPD & Qualité',
+  'Déploiement & Recette', 'Backlog — hors périmètre',
+  'Documentation technique', 'Recettage (mar. / jeu.)',
+];
+const EPIC_COLORS = ['#64748b','#7c3aed','#db2777','#2563eb','#059669','#ea580c','#ca8a04','#0d9488','#dc2626','#16a34a','#94a3b8','#475569','#0891b2'];
+const EPIC_SHORT = { 'Infrastructure & Setup':'INFRA', 'Modèle de données & Supabase':'DATA', 'Authentification & comptes':'AUTH',
+  'API & Server Actions (Next.js)':'API', 'Frontend web — pages fonctionnelles':'WEB', 'PWA (Progressive Web App)':'PWA',
+  'Onboarding guidé (driver.js)':'ONBOARD', 'Automatisations':'AUTOMATION', 'Sécurité, RGPD & Qualité':'QUALITY',
+  'Déploiement & Recette':'RELEASE', 'Backlog — hors périmètre':'BACKLOG',
+  'Documentation technique':'DOC', 'Recettage (mar. / jeu.)':'REC' };
+
+const macroStages = EPIC_ORDER.map((epic, i) => {
+  const epicTasks = tasks.filter(t => t.epic === epic);
+  const starts = epicTasks.map(t => t.startD).filter(Boolean);
+  const ends = epicTasks.map(t => t.endD).filter(Boolean);
+  return {
+    epic, color: EPIC_COLORS[i], short: EPIC_SHORT[epic],
+    count: epicTasks.length,
+    startD: starts.length ? new Date(Math.min(...starts)) : null,
+    endD: ends.length ? new Date(Math.max(...ends)) : null,
+  };
+}).filter(s => s.count > 0);
+
+function taskMatches(t){
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  if (!q) return true;
+  const hay = `${t.id} ${t.title} ${t.issueNum||''} ${t.epic||''}`.toLowerCase();
+  return hay.includes(q);
+}
+
+function buildHeader(totalWidth, ti){
+  let dayCells = '';
+  let bgCells = '';
+  for (let i = 0; i < totalDays; i++){
+    const d = addDays(globalStart, i);
+    const monthLabel = (i === 0 || d.getDate() === 1) ? `<span class="mo">${MONTHS_FR[d.getMonth()]}</span>` : '';
+    dayCells += `<div class="day${i === ti ? ' today-col' : ''}" style="width:${colWidth}px">${monthLabel}${colWidth >= 18 ? `<span class="dn">${d.getDate()}</span>` : ''}</div>`;
+    bgCells += `<div class="day" style="width:${colWidth}px"></div>`;
+  }
+  return { dayCells, bgCells };
+}
+
+function render(){
+  if (viewMode === 'macro') renderMacro(); else renderDetail();
+}
+
+function renderMacro(){
+  document.documentElement.style.setProperty('--colw', colWidth + 'px');
+  const totalWidth = totalDays * colWidth;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const ti = dayIndex(today, globalStart);
+  const { dayCells, bgCells } = buildHeader(totalWidth, ti);
+
+  let rowsHtml = `<div class="grow head">
+    <div class="numcol"></div>
+    <div class="lbl-col lbl" style="font-weight:600;">Grande étape</div>
+    <div class="tl-col" style="display:flex; width:${totalWidth}px;">${dayCells}</div>
+  </div>`;
+
+  macroStages.forEach((s, i) => {
+    let barHtml = '';
+    if (s.startD && s.endD){
+      const sIdx = dayIndex(s.startD, globalStart), eIdx = dayIndex(s.endD, globalStart);
+      const left = sIdx * colWidth, width = Math.max((eIdx - sIdx + 1) * colWidth - 4, 24);
+      barHtml = `<div class="macro-pill" data-stage="${i}" style="left:${left+2}px; width:${width}px; background:${s.color};">
+        <span class="macro-lbl">${escapeHtml(s.epic)} · ${fmtShort(s.startD)}–${fmtShort(s.endD)}</span>
+        <span class="mcount">${s.count}</span>
+      </div>`;
+    }
+    rowsHtml += `<div class="grow" data-stage="${i}">
+      <div class="numcol">${i + 1}</div>
+      <div class="lbl-col lbl" data-stage="${i}">
+        <span class="macro-swatch" style="background:${s.color}"></span>
+        <span class="lbl-text" style="font-weight:600;">${escapeHtml(s.epic)}</span>
+        <span class="issuenum">${s.count} tickets</span>
+      </div>
+      <div class="tl-col barrow" style="width:${totalWidth}px; display:flex;">
+        ${bgCells}
+        ${barHtml}
+      </div>
+    </div>`;
+  });
+
+  table.innerHTML = rowsHtml;
+  addTodayLine(ti);
+  document.getElementById('footer').textContent = `${macroStages.length} grandes étapes`;
+
+  table.querySelectorAll('[data-stage]').forEach(el => {
+    el.addEventListener('click', () => {
+      const s = macroStages[parseInt(el.getAttribute('data-stage'))];
+      viewMode = 'detail';
+      document.getElementById('btn-view-detail').classList.add('active');
+      document.getElementById('btn-view-macro').classList.remove('active');
+      document.getElementById('search').value = s.epic;
+      render();
+    });
+    const tooltip = document.getElementById('tooltip');
+    el.addEventListener('mousemove', (e) => {
+      const s = macroStages[parseInt(el.getAttribute('data-stage'))];
+      let html = `<div class="t-title">${escapeHtml(s.epic)}</div>`;
+      html += s.startD ? `<div class="t-row">${fmtShort(s.startD)} → ${fmtShort(s.endD)}</div>` : `<div class="t-row">Non planifié</div>`;
+      html += `<div class="t-row"><b>${s.count}</b> tickets</div>`;
+      html += `<div class="t-row" style="color:var(--text-faint); margin-top:2px;">Clique pour voir le détail</div>`;
+      tooltip.innerHTML = html;
+      tooltip.style.display = 'block';
+      const x = Math.min(e.clientX + 14, window.innerWidth - 360);
+      const y = Math.min(e.clientY + 14, window.innerHeight - 150);
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    });
+    el.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+  });
+}
+
+function addTodayLine(ti){
+  if (ti >= 0 && ti < totalDays){
+    document.querySelectorAll('.grow').forEach((row, i) => {
+      const tl = row.querySelector('.tl-col');
+      if (!tl) return;
+      const line = document.createElement('div');
+      line.className = 'today-line';
+      line.style.left = (ti * colWidth) + 'px';
+      if (i === 0){
+        const dot = document.createElement('div');
+        dot.className = 'today-dot';
+        line.appendChild(dot);
+      }
+      tl.appendChild(line);
+    });
+  }
+}
+
+function renderDetail(){
+  document.documentElement.style.setProperty('--colw', colWidth + 'px');
+  const totalWidth = totalDays * colWidth;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const ti = dayIndex(today, globalStart);
+  const { dayCells, bgCells } = buildHeader(totalWidth, ti);
+  let rowsHtml = `<div class="grow head">
+    <div class="numcol"></div>
+    <div class="lbl-col lbl" style="font-weight:600;">Titre</div>
+    <div class="tl-col" style="display:flex; width:${totalWidth}px;">${dayCells}</div>
+  </div>`;
+
+  let visible = 0;
+  tasks.forEach(t => {
+    const match = taskMatches(t);
+    if (match) visible++;
+    let barHtml = '';
+    if (t.startD && t.endD){
+      const s = dayIndex(t.startD, globalStart), en = dayIndex(t.endD, globalStart);
+      const left = s * colWidth, width = Math.max((en - s + 1) * colWidth - 4, 18);
+      const label = t.special === 'doc' ? '📄' : (t.special === 'test' ? '🧪' : `[${t.id}] ${escapeHtml(t.title)}${t.issueNum ? ' #' + t.issueNum : ''}`);
+      barHtml = `<div class="pill" data-taskid="${t.id}" style="left:${left+2}px; width:${width}px;">${iconSvg()}<span class="ptxt">${label}</span></div>`;
+    } else {
+      barHtml = `<span class="unsched">non planifié</span>`;
+    }
+    rowsHtml += `<div class="grow" data-taskid="${t.id}" style="display:${match ? 'flex' : 'none'}">
+      <div class="numcol">${t.row}</div>
+      <div class="lbl-col lbl" data-taskid="${t.id}">
+        ${iconSvg().replace('<svg ', '<svg class="icon" ')}
+        <span class="lbl-text" title="[${t.id}] ${escapeHtml(t.title)}">[${t.id}] ${escapeHtml(t.title)}</span>
+        ${t.issueNum ? `<span class="issuenum">#${t.issueNum}</span>` : ''}
+      </div>
+      <div class="tl-col barrow" style="width:${totalWidth}px; display:flex;">
+        ${bgCells}
+        ${barHtml}
+      </div>
+    </div>`;
+  });
+
+  table.innerHTML = rowsHtml;
+  addTodayLine(ti);
+
+  document.getElementById('footer').textContent = `${visible} / ${tasks.length} tickets affichés`;
+
+  attachHandlers();
+  applyHighlight();
+}
+
+function attachHandlers(){
+  const tooltip = document.getElementById('tooltip');
+  table.querySelectorAll('[data-taskid]').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const id = el.getAttribute('data-taskid');
+      const t = taskById[id];
+      let html = `<div class="t-title">[${t.id}] ${escapeHtml(t.title)}${t.issueNum ? ' #' + t.issueNum : ''}</div>`;
+      html += t.startD ? `<div class="t-row">${fmtShort(t.startD)} → ${fmtShort(t.endD)}</div>` : `<div class="t-row">Non planifié</div>`;
+      if (t.priority) html += `<div class="t-row"><b>Priorité :</b> ${t.priority}${t.phase ? ` · <b>Phase :</b> ${escapeHtml(t.phase)}` : ''}${t.flux && t.flux !== '—' ? ` · <b>${escapeHtml(t.flux)}</b>` : ''}</div>`;
+      if (t.epic) html += `<div class="t-row"><b>Chantier :</b> ${escapeHtml(t.epic)}</div>`;
+      if (t.deps && t.deps.length) html += `<div class="t-row t-deps"><b>Dépend de :</b> ${t.deps.join(', ')}</div>`;
+      if (t.blocks && t.blocks.length) html += `<div class="t-row t-blocks"><b>Bloque :</b> ${t.blocks.join(', ')}</div>`;
+      tooltip.innerHTML = html;
+      tooltip.style.display = 'block';
+      const x = Math.min(e.clientX + 14, window.innerWidth - 360);
+      const y = Math.min(e.clientY + 14, window.innerHeight - 150);
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    });
+    el.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+    el.addEventListener('click', () => selectTask(el.getAttribute('data-taskid')));
+  });
+}
+
+function selectTask(id){
+  if (highlighted && highlighted.self === id){ highlighted = null; }
+  else {
+    const t = taskById[id];
+    highlighted = { self: id, deps: new Set(t.deps || []), blocks: new Set(t.blocks || []) };
+  }
+  applyHighlight();
+}
+
+function applyHighlight(){
+  table.querySelectorAll('.pill').forEach(b => b.classList.remove('highlight-self','highlight-dep','highlight-block'));
+  if (!highlighted) return;
+  const selfBar = table.querySelector(`.pill[data-taskid="${highlighted.self}"]`);
+  if (selfBar) selfBar.classList.add('highlight-self');
+  highlighted.deps.forEach(id => { const b = table.querySelector(`.pill[data-taskid="${id}"]`); if (b) b.classList.add('highlight-dep'); });
+  highlighted.blocks.forEach(id => { const b = table.querySelector(`.pill[data-taskid="${id}"]`); if (b) b.classList.add('highlight-block'); });
+}
+
+document.getElementById('btn-zoom-in').addEventListener('click', () => { colWidth = Math.min(56, colWidth + 6); render(); });
+document.getElementById('btn-zoom-out').addEventListener('click', () => { colWidth = Math.max(10, colWidth - 6); render(); });
+document.getElementById('btn-today').addEventListener('click', () => {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const ti = dayIndex(today, globalStart);
+  document.getElementById('scroll-area').scrollLeft = Math.max(0, ti * colWidth - 200);
+});
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('btn-view-detail').addEventListener('click', () => {
+  viewMode = 'detail';
+  document.getElementById('btn-view-detail').classList.add('active');
+  document.getElementById('btn-view-macro').classList.remove('active');
+  render();
+});
+document.getElementById('btn-view-macro').addEventListener('click', () => {
+  viewMode = 'macro';
+  document.getElementById('btn-view-macro').classList.add('active');
+  document.getElementById('btn-view-detail').classList.remove('active');
+  render();
+});
+
+render();
+setTimeout(() => {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const ti = dayIndex(today, globalStart);
+  const scroll = document.getElementById('scroll-area');
+  if (ti >= 0) scroll.scrollLeft = Math.max(0, ti * colWidth - 150);
+}, 50);
+</script>
+</body>
+</html>
